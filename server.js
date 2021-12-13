@@ -12,8 +12,7 @@ app.get('/', function (req, res) {
 })
 
 app.post('/', function (req, res) {
-  console.log(req.body)
-  if (!req.body.payload) throw new Error('JSON PARSE FAILED')
+  if (!req.body.payload) throw new createError(400, 'JSON PARSE FAILED')
   const flatten = ({ image, ...rest }) => {
     return Object.assign({}, { image: image.showImage }, rest)
   }
@@ -37,7 +36,9 @@ app.listen(PORT, function () {
 })
 
 app.use(function (err, req, res, next) {
-  res.status(err.status || 500).json({
+  res.status(err.status || 400).json({
     error: 'Could not decode request: JSON parsing failed',
   })
 })
+
+module.exports = app
