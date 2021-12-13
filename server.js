@@ -1,5 +1,6 @@
 const PORT = process.env.PORT || 3000
 const express = require('express')
+const _ = require('lodash')
 const app = express()
 
 app.use(express.json())
@@ -13,6 +14,17 @@ const courses = [
 app.get('/', function (req, res) {
   //when we get an http get request to the root/homepage
   res.send('Hello World')
+})
+
+app.post('/', function (req, res) {
+  if (!req.body.payload) throw new Error('JSON PARSE FAILED')
+  res.send(
+    _.filter(req.body.payload, (e) => e.drm == true && e.episodeCount > 0)
+  )
+  //add the course to the array
+
+  //return the course
+  // res.send(course)
 })
 
 //when we route to /courses
@@ -77,4 +89,10 @@ app.put('/courses/:id', function (req, res) {
 
 app.listen(PORT, function () {
   console.log(`Listening on Port ${PORT}`)
+})
+
+app.use(function (err, req, res, next) {
+  res.status(err.status || 500).json({
+    error: 'Could not decode request: JSON parsing failed',
+  })
 })
